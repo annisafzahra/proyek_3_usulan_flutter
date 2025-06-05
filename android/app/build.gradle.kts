@@ -8,6 +8,7 @@ plugins {
 android {
     namespace = "com.example.perpus_flutter"
     compileSdk = flutter.compileSdkVersion
+    //compileSdk = 33
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

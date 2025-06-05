@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
+// import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:perpus_flutter/providers/usulan_provider.dart';
 
@@ -18,7 +18,8 @@ class _UsulanState extends State<Usulan> {
   final TextEditingController _pengarangController = TextEditingController();
   final TextEditingController _penerbitController = TextEditingController();
   final TextEditingController _tahunTerbitController = TextEditingController();
-  final TextEditingController _tanggalUsulanController = TextEditingController();
+  final TextEditingController _tanggalUsulanController =
+      TextEditingController();
 
   String? _selectedKategori;
   final List<String> _kategoriList = [
@@ -29,30 +30,6 @@ class _UsulanState extends State<Usulan> {
   ];
 
   File? _selectedImage;
-
-  Future<bool> _requestPermission() async {
-    if (Platform.isAndroid) {
-      if (await Permission.storage.isGranted) return true;
-      final status = await Permission.storage.request();
-      if (!status.isGranted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Izin akses galeri ditolak')),
-        );
-        return false;
-      }
-      return true;
-    } else if (Platform.isIOS) {
-      final status = await Permission.photos.request();
-      if (!status.isGranted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Izin akses galeri ditolak')),
-        );
-        return false;
-      }
-      return true;
-    }
-    return false;
-  }
 
   Widget _buildTextField(
     TextEditingController controller,
@@ -100,12 +77,13 @@ class _UsulanState extends State<Usulan> {
             _selectedKategori = value;
           });
         },
-        items: _kategoriList.map((kategori) {
-          return DropdownMenuItem<String>(
-            value: kategori,
-            child: Text(kategori),
-          );
-        }).toList(),
+        items:
+            _kategoriList.map((kategori) {
+              return DropdownMenuItem<String>(
+                value: kategori,
+                child: Text(kategori),
+              );
+            }).toList(),
         decoration: InputDecoration(
           labelText: 'Kategori',
           filled: true,
@@ -161,9 +139,6 @@ class _UsulanState extends State<Usulan> {
             children: [
               ElevatedButton(
                 onPressed: () async {
-                  final granted = await _requestPermission();
-                  if (!granted) return;
-
                   try {
                     final picked = await ImagePicker().pickImage(
                       source: ImageSource.gallery,
@@ -180,16 +155,17 @@ class _UsulanState extends State<Usulan> {
                     print("Terjadi kesalahan saat memilih gambar: $e");
                   }
                 },
+
                 child: const Text('Pilih Gambar'),
               ),
               const SizedBox(width: 16),
               _selectedImage != null
                   ? Image.file(
-                      _selectedImage!,
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.cover,
-                    )
+                    _selectedImage!,
+                    width: 80,
+                    height: 80,
+                    fit: BoxFit.cover,
+                  )
                   : const Text("Belum ada gambar"),
             ],
           ),
@@ -274,31 +250,41 @@ class _UsulanState extends State<Usulan> {
 
                     if (usulanProvider.success) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Usulan berhasil dikirim!')),
+                        const SnackBar(
+                          content: Text('Usulan berhasil dikirim!'),
+                        ),
                       );
                       Navigator.pop(context, true);
                     } else {
                       // Cek jika error karena duplikat
-                      if ((usulanProvider.errorMessage ?? '').toLowerCase().contains('duplikat') ||
-                          (usulanProvider.errorMessage ?? '').toLowerCase().contains('sudah pernah')) {
+                      if ((usulanProvider.errorMessage ?? '')
+                              .toLowerCase()
+                              .contains('duplikat') ||
+                          (usulanProvider.errorMessage ?? '')
+                              .toLowerCase()
+                              .contains('sudah pernah')) {
                         showDialog(
                           context: context,
-                          builder: (context) => AlertDialog(
-                            title: const Text('Peringatan'),
-                            content: const Text('Judul buku sudah pernah diusulkan, tidak boleh duplikasi!'),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: const Text('OK'),
+                          builder:
+                              (context) => AlertDialog(
+                                title: const Text('Peringatan'),
+                                content: const Text(
+                                  'Judul buku sudah pernah diusulkan, tidak boleh duplikasi!',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text('OK'),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
                         );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
-                              usulanProvider.errorMessage ?? 'Terjadi kesalahan',
+                              usulanProvider.errorMessage ??
+                                  'Terjadi kesalahan',
                             ),
                           ),
                         );
