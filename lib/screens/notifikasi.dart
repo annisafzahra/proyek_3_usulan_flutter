@@ -61,21 +61,23 @@ class NotifikasiScreenState extends State<NotifikasiScreen> {
             onPressed: () async {
               final confirm = await showDialog<bool>(
                 context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('Hapus Semua Notifikasi?'),
-                  content: const Text(
-                      'Apakah Anda yakin ingin menghapus semua notifikasi?'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, false),
-                      child: const Text('Batal'),
+                builder:
+                    (context) => AlertDialog(
+                      title: const Text('Hapus Semua Notifikasi?'),
+                      content: const Text(
+                        'Apakah Anda yakin ingin menghapus semua notifikasi?',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text('Batal'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: const Text('Hapus'),
+                        ),
+                      ],
                     ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, true),
-                      child: const Text('Hapus'),
-                    ),
-                  ],
-                ),
               );
               if (confirm == true) {
                 try {
@@ -84,7 +86,10 @@ class NotifikasiScreenState extends State<NotifikasiScreen> {
                     _notifications.clear();
                   });
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Semua notifikasi dihapus')),
+                    const SnackBar(
+                      content: Text('Semua notifikasi dihapus'),
+                      backgroundColor: Colors.green,
+                    ),
                   );
                 } catch (e, stackTrace) {
                   String errorMsg = e.toString();
@@ -96,11 +101,17 @@ class NotifikasiScreenState extends State<NotifikasiScreen> {
                     } catch (_) {}
                   }
                   // Log error ke konsol
-                  _logger.e('Gagal menghapus notifikasi: $errorMsg', error: e, stackTrace: stackTrace);
+                  _logger.e(
+                    'Gagal menghapus notifikasi: $errorMsg',
+                    error: e,
+                    stackTrace: stackTrace,
+                  );
 
                   // Tampilkan pesan error ke user
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Gagal menghapus notifikasi: $errorMsg')),
+                    SnackBar(
+                      content: Text('Gagal menghapus notifikasi: $errorMsg'),
+                    ),
                   );
                 }
               }

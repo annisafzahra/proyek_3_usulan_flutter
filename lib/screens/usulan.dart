@@ -30,6 +30,7 @@ class _UsulanState extends State<Usulan> {
   ];
 
   File? _selectedImage;
+  bool _isLoading = false; // Tambahkan ini
 
   Widget _buildTextField(
     TextEditingController controller,
@@ -231,67 +232,108 @@ class _UsulanState extends State<Usulan> {
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  onPressed: () async {
-                    final usulanProvider = Provider.of<UsulanProvider>(
-                      context,
-                      listen: false,
-                    );
-
-                    await usulanProvider.kirimUsulan(
-                      bookTitle: _judulController.text.toLowerCase(),
-                      genre: _selectedKategori ?? '',
-                      isbn: _isbnController.text,
-                      author: _pengarangController.text,
-                      publisher: _penerbitController.text,
-                      publicationYear: _tahunTerbitController.text,
-                      date: _tanggalUsulanController.text,
-                      bookImage: _selectedImage,
-                    );
-
-                    if (usulanProvider.success) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Usulan berhasil dikirim!'),
-                        ),
-                      );
-                      Navigator.pop(context, true);
-                    } else {
-                      // Cek jika error karena duplikat
-                      if ((usulanProvider.errorMessage ?? '')
-                              .toLowerCase()
-                              .contains('duplikat') ||
-                          (usulanProvider.errorMessage ?? '')
-                              .toLowerCase()
-                              .contains('sudah pernah')) {
-                        showDialog(
-                          context: context,
-                          builder:
-                              (context) => AlertDialog(
-                                title: const Text('Peringatan'),
-                                content: const Text(
-                                  'Judul buku sudah pernah diusulkan, tidak boleh duplikasi!',
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    child: const Text('OK'),
+                  onPressed:
+                      _isLoading
+                          ? null
+                          : () async {
+                            // Validasi input
+                            if (_judulController.text.isEmpty ||
+                                _selectedKategori == null ||
+                                _isbnController.text.isEmpty ||
+                                _pengarangController.text.isEmpty ||
+                                _penerbitController.text.isEmpty ||
+                                _tahunTerbitController.text.isEmpty ||
+                                _tanggalUsulanController.text.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Harap isi semua data yang diperlukan!',
                                   ),
-                                ],
-                              ),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              usulanProvider.errorMessage ??
-                                  'Terjadi kesalahan',
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                              return;
+                            }
+
+                            setState(() {
+                              _isLoading = true;
+                            });
+
+                            final usulanProvider = Provider.of<UsulanProvider>(
+                              context,
+                              listen: false,
+                            );
+
+                            await usulanProvider.kirimUsulan(
+                              bookTitle: _judulController.text.toLowerCase(),
+                              genre: _selectedKategori ?? '',
+                              isbn: _isbnController.text,
+                              author: _pengarangController.text,
+                              publisher: _penerbitController.text,
+                              publicationYear: _tahunTerbitController.text,
+                              date: _tanggalUsulanController.text,
+                              bookImage: _selectedImage,
+                            );
+
+                            setState(() {
+                              _isLoading = false;
+                            });
+
+                            if (usulanProvider.success) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Usulan berhasil dikirim!'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                              Navigator.pop(context, true);
+                            } else {
+                              if ((usulanProvider.errorMessage ?? '')
+                                      .toLowerCase()
+                                      .contains('duplikat') ||
+                                  (usulanProvider.errorMessage ?? '')
+                                      .toLowerCase()
+                                      .contains('sudah pernah')) {
+                                showDialog(
+                                  context: context,
+                                  builder:
+                                      (context) => AlertDialog(
+                                        title: const Text('Peringatan'),
+                                        content: const Text(
+                                          'Judul buku sudah pernah diusulkan, tidak boleh duplikasi!',
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed:
+                                                () => Navigator.pop(context),
+                                            child: const Text('OK'),
+                                          ),
+                                        ],
+                                      ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      usulanProvider.errorMessage ??
+                                          'Terjadi kesalahan',
+                                    ),
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                  child:
+                      _isLoading
+                          ? const SizedBox(
+                            width: 22,
+                            height: 22,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2.5,
                             ),
-                          ),
-                        );
-                      }
-                    }
-                  },
-                  child: const Text("Kirim", style: TextStyle(fontSize: 16)),
+                          )
+                          : const Text("Kirim", style: TextStyle(fontSize: 16)),
                 ),
               ),
             ],

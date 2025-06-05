@@ -11,10 +11,27 @@ class UsulanCard extends StatelessWidget {
 
   // Fungsi untuk kapitalisasi setiap kata (mirip aturan KBBI judul)
   String capitalizeEachWord(String text) {
-    return text.split(' ').map((word) {
-      if (word.isEmpty) return word;
-      return word[0].toUpperCase() + word.substring(1).toLowerCase();
-    }).join(' ');
+    return text
+        .split(' ')
+        .map((word) {
+          if (word.isEmpty) return word;
+          return word[0].toUpperCase() + word.substring(1).toLowerCase();
+        })
+        .join(' ');
+  }
+
+  // Tambahkan fungsi warna status di dalam class UsulanCard
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'diproses':
+        return Colors.blue;
+      case 'diterima':
+        return Colors.green;
+      case 'ditolak':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
   }
 
   @override
@@ -97,26 +114,16 @@ class UsulanCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Judul: ${capitalizeEachWord(usulan.bookTitle)}", // <-- gunakan fungsi di sini
+                "Judul: ${capitalizeEachWord(usulan.bookTitle)}",
                 style: const TextStyle(fontWeight: FontWeight.bold),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 4),
+
+              // Tambahkan status dengan background warna
               Text(
                 "ISBN: ${usulan.isbn}",
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                "Pengarang: ${usulan.author}",
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                "Kategori: ${usulan.genre}",
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -125,6 +132,26 @@ class UsulanCard extends StatelessWidget {
                 "Tanggal: ${usulan.date}",
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
+              ),
+              SizedBox(height: 5),
+              Container(
+                margin: const EdgeInsets.only(bottom: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: _getStatusColor(usulan.status),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  usulan.status,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
               ),
             ],
           ),
@@ -242,16 +269,17 @@ class UsulanCard extends StatelessWidget {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const AlertDialog(
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 16),
-            Text('Sedang menghapus usulan...'),
-          ],
-        ),
-      ),
+      builder:
+          (context) => const AlertDialog(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text('Sedang menghapus usulan...'),
+              ],
+            ),
+          ),
     );
 
     try {
@@ -278,23 +306,6 @@ class UsulanCard extends StatelessWidget {
       Navigator.of(context).pop();
       await _showErrorDialog(context, 'Terjadi kesalahan yang tidak diketahui');
     }
-  }
-
-  Future<void> _showSuccessDialog(BuildContext context, String message) async {
-    await showDialog(
-      context: context,
-      builder:
-          (_) => AlertDialog(
-            title: const Text('Berhasil'),
-            content: Text(message),
-            actions: [
-              TextButton(
-                child: const Text('OK'),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
-          ),
-    );
   }
 
   Future<void> _showErrorDialog(BuildContext context, String message) async {
