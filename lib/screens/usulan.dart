@@ -105,22 +105,43 @@ class _UsulanState extends State<Usulan> {
   }
 
   Widget _buildDateField() {
-    return GestureDetector(
-      onTap: () async {
-        final picked = await showDatePicker(
-          context: context,
-          initialDate: DateTime.now(),
-          firstDate: DateTime(1900),
-          lastDate: DateTime(2100),
-        );
-        if (picked != null) {
-          setState(() {
-            _tanggalUsulanController.text = picked.toString().split(' ')[0];
-          });
-        }
-      },
-      child: AbsorbPointer(
-        child: _buildTextField(_tanggalUsulanController, 'Tanggal Usulan'),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: TextField(
+        controller: _tanggalUsulanController,
+        readOnly: true,
+        decoration: InputDecoration(
+          labelText: 'Tanggal Usulan',
+          prefixIcon: const Icon(
+            Icons.calendar_today,
+            color: Colors.blue,
+          ), // Icon kalender
+          filled: true,
+          fillColor: const Color(0xFFF1F5F9),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 14,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(
+              color: Color.fromARGB(255, 207, 211, 216),
+            ),
+          ),
+        ),
+        onTap: () async {
+          final picked = await showDatePicker(
+            context: context,
+            initialDate: DateTime.now(),
+            firstDate: DateTime(1900),
+            lastDate: DateTime(2100),
+          );
+          if (picked != null) {
+            setState(() {
+              _tanggalUsulanController.text = picked.toString().split(' ')[0];
+            });
+          }
+        },
       ),
     );
   }
@@ -333,7 +354,13 @@ class _UsulanState extends State<Usulan> {
                               strokeWidth: 2.5,
                             ),
                           )
-                          : const Text("Kirim", style: TextStyle(fontSize: 16)),
+                          : const Text(
+                            "Kirim",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white, // Teks putih
+                            ),
+                          ),
                 ),
               ),
             ],

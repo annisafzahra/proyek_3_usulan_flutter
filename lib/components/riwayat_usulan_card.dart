@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:perpus_flutter/providers/usulan_provider.dart';
 import 'package:perpus_flutter/models/usulan.dart';
 import 'package:perpus_flutter/config/config.dart';
+import 'package:intl/intl.dart';
 
 class UsulanCard extends StatelessWidget {
   final UsulanModel usulan;
@@ -129,7 +130,7 @@ class UsulanCard extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                "Tanggal: ${usulan.date}",
+                "Tanggal: ${formatTanggal(usulan.date)}",
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -323,5 +324,14 @@ class UsulanCard extends StatelessWidget {
             ],
           ),
     );
+  }
+
+  String formatTanggal(String tanggal) {
+    try {
+      final date = DateTime.parse(tanggal);
+      return DateFormat('dd-MM-yyyy').format(date);
+    } catch (_) {
+      return tanggal;
+    }
   }
 }

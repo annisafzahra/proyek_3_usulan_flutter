@@ -56,6 +56,12 @@ class LoginPageState extends State<LoginPage> {
 
           if (mounted) {
             Navigator.pushReplacementNamed(context, '/dashboard');
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Login berhasil!'),
+                backgroundColor: Colors.green,
+              ),
+            );
           }
         } else {
           _showSnackBar(
@@ -82,7 +88,9 @@ class LoginPageState extends State<LoginPage> {
   }
 
   void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   void _showErrorDialog(String message) {
@@ -128,8 +136,8 @@ class LoginPageState extends State<LoginPage> {
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Card(       
-              color: Colors.white,       
+            child: Card(
+              color: Colors.white,
               elevation: 8,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
@@ -217,7 +225,9 @@ class LoginPageState extends State<LoginPage> {
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
-                          borderSide: BorderSide(color: const Color.fromARGB(255, 209, 209, 209)),
+                          borderSide: BorderSide(
+                            color: const Color.fromARGB(255, 209, 209, 209),
+                          ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
@@ -227,7 +237,9 @@ class LoginPageState extends State<LoginPage> {
                         ),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
                             color: Colors.grey,
                           ),
                           onPressed: () {
@@ -249,9 +261,10 @@ class LoginPageState extends State<LoginPage> {
                           width: double.infinity,
                           height: 50,
                           child: ElevatedButton(
-                            onPressed: loading
-                                ? null
-                                : () => login(
+                            onPressed:
+                                loading
+                                    ? null
+                                    : () => login(
                                       emailController.text,
                                       passwordController.text,
                                     ),
@@ -261,17 +274,18 @@ class LoginPageState extends State<LoginPage> {
                                 borderRadius: BorderRadius.circular(15),
                               ),
                             ),
-                            child: loading
-                                ? const CircularProgressIndicator(
-                                    color: Colors.white,
-                                  )
-                                : Text(
-                                    'Masuk',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 16,
+                            child:
+                                loading
+                                    ? const CircularProgressIndicator(
                                       color: Colors.white,
+                                    )
+                                    : Text(
+                                      'Masuk',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 16,
+                                        color: Colors.white,
+                                      ),
                                     ),
-                                  ),
                           ),
                         );
                       },
@@ -288,7 +302,8 @@ class LoginPageState extends State<LoginPage> {
                           style: GoogleFonts.poppins(fontSize: 14),
                         ),
                         TextButton(
-                          onPressed: () => Navigator.pushNamed(context, '/register'),
+                          onPressed:
+                              () => Navigator.pushNamed(context, '/register'),
                           child: Text(
                             "Daftar",
                             style: GoogleFonts.poppins(
