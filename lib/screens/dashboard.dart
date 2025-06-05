@@ -13,6 +13,7 @@ import 'package:perpus_flutter/components/app_bar.dart';
 import 'package:perpus_flutter/screens/usulan.dart';
 import 'package:perpus_flutter/models/book.dart';
 import 'package:flutter/foundation.dart';
+import 'package:perpus_flutter/providers/user_provider.dart'; // Tambahkan ini
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -51,13 +52,20 @@ class DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     final provider = Provider.of<BookProvider>(context, listen: false);
-    provider.loadBooksFromCache(); // tampilkan cache dulu
-    Future.microtask(() => provider.fetchBooks()); // lalu fetch ke backend
+    provider.loadBooksFromCache();
+    Future.microtask(() => provider.fetchBooks());
+
+    // Tambahkan ini untuk load user dari cache & backend
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    userProvider.loadUserFromCache();
+    Future.microtask(() => userProvider.fetchUserData());
   }
 
   @override
   Widget build(BuildContext context) {
     final bookProvider = Provider.of<BookProvider>(context);
+    final userProvider = Provider.of<UserProvider>(context); // Tambahkan ini
+
     return FutureBuilder<String?>(
       future: _getToken(),
       builder: (context, snapshot) {
@@ -72,7 +80,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildWelcomeText(),
+                  _buildWelcomeText(userProvider), // Ubah di sini
                   InfoCard(
                     title: 'Selamat datang',
                     description:
@@ -103,7 +111,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
                         ),
-                      ),                                                                                        
+                      ),
                       const SizedBox(height: 16),
                       Consumer<BookProvider>(
                         builder: (context, provider, child) {
@@ -119,7 +127,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                             return SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                               child: Row(
-                                children:                                
+                                children:
                                     bookProvider.books.map((book) {
                                       return Padding(
                                         padding: const EdgeInsets.only(
@@ -157,19 +165,21 @@ class DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildWelcomeText() {
+  // Ubah method ini agar menerima userProvider
+  Widget _buildWelcomeText(UserProvider userProvider) {
+    final userName = userProvider.username ?? 'Pengguna';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
+      children: [
         Text(
-          'Hi, Alfin',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          'Hi, $userName',
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
-        Text(
+        const Text(
           'Ayo mulai mengusulkan buku.',
           style: TextStyle(fontSize: 16, color: Colors.grey),
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
       ],
     );
   }

@@ -1,5 +1,5 @@
 class Config {
-  static const String ip = '192.168.1.8:8000';
+  static const String ip = '192.168.100.15:8000';
 
   // Untuk endpoint API
   static String baseUrl(String path) => 'http://$ip/api/$path';
