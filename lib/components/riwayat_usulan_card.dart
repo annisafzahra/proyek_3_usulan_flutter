@@ -242,17 +242,16 @@ class UsulanCard extends StatelessWidget {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder:
-          (context) => const AlertDialog(
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text('Sedang menghapus usulan...'),
-              ],
-            ),
-          ),
+      builder: (context) => const AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text('Sedang menghapus usulan...'),
+          ],
+        ),
+      ),
     );
 
     try {
@@ -262,7 +261,15 @@ class UsulanCard extends StatelessWidget {
       Navigator.of(context).pop();
 
       if (usulanProvider.success) {
-        await _showSuccessDialog(context, 'Usulan berhasil dihapus');
+        // Tampilkan SnackBar, bukan dialog
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Usulan berhasil dihapus'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
       } else if (usulanProvider.errorMessage != null) {
         await _showErrorDialog(context, usulanProvider.errorMessage!);
       }
