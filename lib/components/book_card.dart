@@ -124,7 +124,6 @@ class BookDetailModal extends StatelessWidget {
                     "Detail Buku",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  const Icon(Icons.favorite_border),
                 ],
               ),
               const SizedBox(height: 16),
